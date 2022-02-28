@@ -16,13 +16,22 @@ if [[ "$(basename -- "$0")" == "configure.sh" ]]; then
 	echo "run by: source ./configure.sh"
 else
     echo "Setting env..."
-	if [[ "$2" == "--arm" ]]; then
+	if [[ "$1" == "--arm" ]]; then
  	    echo "architecture=arm"
 		 . ../../env_set.sh >/dev/null
 		export QT_PATH=$TOOLCHAIN_PATH/$TOOLCHAIN_PREFIX/sysroot/usr/qt5
-	else
- 	    echo "architecture=x86"
+		export QT_QPA_PLATFORM=pocketbook2
+	elif [[ "$1" == "--emulator" ]]; then
+ 	    echo "architecture=x86 (emulator)"
 		export QT_PATH=$PB_SDK_DIR/local/qt5
+		export QT_QPA_PLATFORM=pocketbook2
+	else
+ 	    echo "architecture=x86 ($1)"
+		if [[ -z "$1" ]]; then
+ 	    	echo "qt path must be set: source ./configure.sh [qt/path]"
+		fi
+		export QT_PATH=$1
+		export QT_QPA_PLATFORM=xcb
 	fi
 
 	export QMAKE=$QT_PATH/bin/qmake
@@ -30,7 +39,6 @@ else
 	export QT_LIBRARY_PATH=$QT_PATH/lib
 
 	export LD_LIBRARY_PATH=$QT_LIBRARY_PATH:$LD_LIBRARY_PATH
-	export QT_QPA_PLATFORM=pocketbook2
 
 	echo "QMAKE=$QMAKE"
 	echo "QT_INCLUDE_PATH=$QT_INCLUDE_PATH"
