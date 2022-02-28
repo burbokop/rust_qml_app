@@ -27,8 +27,12 @@ fn main() {
         import QtQuick.Window 2.0
         // Import our Rust classes
         import Greeter 1.0
+        import com.pocketbook.controls 1.0
+
 
         Window {
+            width: DeviceInfoProvider.screenWidth
+            height: DeviceInfoProvider.screenHeight - DeviceInfoProvider.panelHeight
             visible: true
             // Instantiate the rust struct
             Greeter {

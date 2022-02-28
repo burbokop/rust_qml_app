@@ -1,6 +1,16 @@
 #!/bin/bash
 
 
+link_system() {
+	if [[ "$PB_SYSTEM_PATH" != "" ]]; then
+        echo "Making link to system ($PB_SYSTEM_PATH)"
+        rm -f -r ./system
+        ln -s $PB_SYSTEM_PATH
+	else
+        echo "[warn] Link to system not set authomatically. Please make sure if it exists"
+	fi
+}
+
 
 if [[ "$(basename -- "$0")" == "configure.sh" ]]; then
 	echo "configure.sh must be sourced"
@@ -29,14 +39,9 @@ BUILD_DIR=$ROOT_DIR/target/debug/
 echo "ROOT_DIR=$ROOT_DIR"
 echo "BUILD_DIR=$BUILD_DIR"
 
+link_system
 mkdir -p $BUILD_DIR
 cd $BUILD_DIR
-if [[ "$PB_SYSTEM_PATH" != "" ]]; then
-        echo "Making link to system ($PB_SYSTEM_PATH)"
-        rm -f -r ./system
-        ln -s $PB_SYSTEM_PATH
-else
-        echo "[warn] Link to system not set authomatically. Please make sure if it exists"
-fi
+link_system
 
 cd $ROOT_DIR
