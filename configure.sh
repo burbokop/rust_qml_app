@@ -18,9 +18,14 @@ else
     echo "Setting env..."
 	if [[ "$1" == "--arm" ]]; then
  	    echo "architecture=arm"
-		. ../../env_set.sh >/dev/null
-		export QT_PATH=$TOOLCHAIN_PATH/$TOOLCHAIN_PREFIX/sysroot/usr/qt5
+		 . ../../env_set.sh >/dev/null
+		export QT_PATH=$TOOLCHAIN_PATH/$TOOLCHAIN_PREFIX/sysroot/ebrmain
+
 		export QT_QPA_PLATFORM=pocketbook2
+		export PATH="$PB_SDK_DIR/usr/bin:$PATH"
+
+		export CC=$PB_SDK_DIR/usr/bin/arm-obreey-linux-gnueabi-gcc
+		export CXX=$PB_SDK_DIR/usr/bin/arm-obreey-linux-gnueabi-g++
 	elif [[ "$1" == "--emulator" ]]; then
  	    echo "architecture=x86 (emulator)"
 		export QT_PATH=$PB_SDK_DIR/local/qt5
@@ -40,11 +45,14 @@ else
 
 	export LD_LIBRARY_PATH=$QT_LIBRARY_PATH:$LD_LIBRARY_PATH
 
+	echo "PATH=$PATH"
 	echo "QMAKE=$QMAKE"
 	echo "QT_INCLUDE_PATH=$QT_INCLUDE_PATH"
 	echo "QT_LIBRARY_PATH=$QT_LIBRARY_PATH"
 	echo "LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
 	echo "QT_QPA_PLATFORM=$QT_QPA_PLATFORM"
+	echo "CC=$CC"
+	echo "CXX=$CXX"
 fi
 
 

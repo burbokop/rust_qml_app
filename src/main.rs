@@ -1,5 +1,6 @@
 use cstr::cstr;
 use qmetaobject::prelude::*;
+use std::env;
 
 // The `QObject` custom derive macro allows to expose a class to Qt and QML
 #[derive(QObject, Default)]
@@ -17,11 +18,13 @@ struct Greeter {
 }
 
 fn main() {
-    // Register the `Greeter` struct to QML
+    println!("ssssStart.....");
+    env::set_var("QT_QPA_PLATFORM", "pocketbook2");
+
     qml_register_type::<Greeter>(cstr!("Greeter"), 1, 0, cstr!("Greeter"));
-    // Create a QML engine from rust
+
     let mut engine = QmlEngine::new();
-    // (Here the QML code is inline, but one can also load from a file)
+
     engine.load_data(r#"
         import QtQuick 2.6
         import QtQuick.Window 2.0
