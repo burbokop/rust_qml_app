@@ -18,7 +18,7 @@ else
     echo "Setting env..."
 	if [[ "$1" == "--arm" ]]; then
  	    echo "architecture=arm"
-		 . ../../env_set.sh >/dev/null
+		. ../../env_set.sh >/dev/null
 		export QT_PATH=$TOOLCHAIN_PATH/$TOOLCHAIN_PREFIX/sysroot/usr/qt5
 		export QT_QPA_PLATFORM=pocketbook2
 	elif [[ "$1" == "--emulator" ]]; then
