@@ -1,15 +1,12 @@
 // build.rs
 
-use std::{collections::{btree_map, BTreeMap}, env, path::Path};
-
-use crate::build_cfg::{BuildConfigProvider, BuildConfiguration, ValueAlternatives, LinkSource, EnvStr};
 
 
 mod build_cfg {
     use std::{collections::BTreeMap, borrow::Cow};
     use std::env;
     use std::os::unix;
-    use std::path::Path;
+    use std::path::{Path, PathBuf};
     use std::process::Command;
     use regex::{Regex, Captures};
     use serde::{Serialize, Deserialize};
@@ -26,15 +23,21 @@ mod build_cfg {
     impl From<&str> for EnvStr {
         fn from(s: &str) -> Self { EnvStr { str: String::from(s) } }
     }
-
+    
     impl EnvStr {
-        pub fn into_string(&self) -> Cow<'_, str> {
-            Regex::new(r"\$[_a-zA-Z][_a-zA-Z0-9]").unwrap().replace_all(&self.str, |caps: &Captures| -> String {
-                println!("cargo:warning=Env caps `{:?}`", caps);
-                String::from("_")
-                //caps.at(1).unwrap().to_owned()
+        pub fn str(&self) -> Cow<'_, str> {
+            Regex::new(r"\$[_a-zA-Z][_a-zA-Z0-9]*").unwrap().replace_all(&self.str, |caps: &Captures| -> String {
+                match env::var(caps[0][1..].to_string()) {
+                    Ok(res) => res,
+                    Err(_) => {
+                        println!("cargo:warning=Env var: `{:?}` not present", &caps[0][1..]);
+                        caps[0].to_string()
+                    },
+                }
             })
         }
+
+        pub fn path(&self) -> std::io::Result<PathBuf> { std::fs::canonicalize(self.str().into_owned()) }
     }
 
 
@@ -51,7 +54,7 @@ mod build_cfg {
         pub fn into_env<F: Fn(&String) -> bool>(self, key: &String, predicate: &F) -> bool {
             self
                 .alt
-                .into_iter().map(|x| x.into_string().into_owned())
+                .into_iter().map(|x| x.str().into_owned())
                 .find(predicate)
                 .map(|v| env::set_var(key, &v))
                 .is_some()
@@ -60,7 +63,7 @@ mod build_cfg {
 
     impl From<EnvStr> for ValueAlternatives {
         fn from(s: EnvStr) -> Self {
-            ValueAlternatives { alt: vec![s] }
+            ValueAlternatives::new(vec![s])
         }
     }
     impl From<&str> for ValueAlternatives {
@@ -113,8 +116,13 @@ mod build_cfg {
         }
         pub fn into_env<F: Fn(&String) -> bool>(self, predicate: &F) {
             for src in self.sources.into_iter() {
-                Command::new("source")
-                    .arg(src.into_string().into_owned())
+                let cmd = src.path().unwrap();
+
+                println!("cargo:warning=source: `{:?}`", &cmd);
+
+                Command::new("/bin/bash")
+                    .arg("-c")
+                    .arg(format!("\". {:?}\"", &cmd))
                     .output()
                     .unwrap();
             }
@@ -159,9 +167,16 @@ mod build_cfg {
     }
 }
 
+
+
 fn main() {
+    use std::{collections::BTreeMap, env, path::Path};
+    use crate::build_cfg::{BuildConfigProvider, BuildConfiguration, ValueAlternatives, LinkSource, EnvStr};
+
     //"TARGET"
 
+
+    println!("cargo:warning=$PB_SDK_DIR/usr/bin/$PB_SUSTEM_PATH/config -> {}", EnvStr::from("$PB_SDK_DIR/usr/bin/$PB_SYSTEM_PATH/config").str().into_owned());
 
 
     let cfg = BuildConfigProvider::new(BTreeMap::from([
@@ -195,13 +210,13 @@ fn main() {
         .into_env(&|s: &String| Path::new(s).exists());
 
 
-    let targt = env::var("TARGET").unwrap();
+    let cc = env::var("CC").unwrap();
 
     let out_dir = env::var_os("OUT_DIR").unwrap();
     
     println!("gogadoda3");
     println!("cargo:warning={} {}", "output dir:", out_dir.into_string().unwrap());
-    println!("cargo:warning={} {}", "target:", targt);
+    println!("cargo:warning={} {}", "CC:", cc);
 
     
     println!("cargo:rerun-if-changed=build.rs");
