@@ -22,7 +22,7 @@ else
 		export QT_PATH=$TOOLCHAIN_PATH/$TOOLCHAIN_PREFIX/sysroot/ebrmain
 
 		export QT_QPA_PLATFORM=pocketbook2
-		#export PATH="$PB_SDK_DIR/usr/bin:$PATH"
+		export PATH="$PB_SDK_DIR/usr/bin:$PATH"
 
 		export CC=$PB_SDK_DIR/usr/bin/arm-obreey-linux-gnueabi-gcc
 		export CXX=$PB_SDK_DIR/usr/bin/arm-obreey-linux-gnueabi-g++

@@ -218,6 +218,10 @@ fn main() {
     println!("cargo:warning={} {}", "output dir:", out_dir.into_string().unwrap());
     println!("cargo:warning={} {}", "CC:", cc);
 
+
+    env::set_var("PATH", "/home/ivan/workspace/SDK-B288/usr/bin:/home/ivan/.cargo/bin:~/apps/giteye:~/apps/giteye:~/apps/giteye:~/apps/giteye:/home/ivan/.cargo/bin:/home/ivan/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin");
+
+
     
     println!("cargo:rerun-if-changed=build.rs");
 }
