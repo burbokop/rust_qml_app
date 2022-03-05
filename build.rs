@@ -205,23 +205,22 @@ fn main() {
         vec![LinkSource::new(build_cfg::LinkSourceType::Env, String::from("$PB_SYSTEM_PATH"))]
     ));
 
-    cfg
-        .get_from_env(&String::from("TARGET"))
-        .into_env(&|s: &String| Path::new(s).exists());
+    //cfg
+    //    .get_from_env(&String::from("TARGET"))
+    //    .into_env(&|s: &String| Path::new(s).exists());
 
 
     let cc = env::var("CC").unwrap();
+    let path = env::var("PATH").unwrap();
 
     let out_dir = env::var_os("OUT_DIR").unwrap();
     
     println!("gogadoda3");
     println!("cargo:warning={} {}", "output dir:", out_dir.into_string().unwrap());
     println!("cargo:warning={} {}", "CC:", cc);
+    println!("cargo:warning={} {}", "PATH:", path);
 
-
-    env::set_var("PATH", "/home/ivan/workspace/SDK-B288/usr/bin:/home/ivan/.cargo/bin:~/apps/giteye:~/apps/giteye:~/apps/giteye:~/apps/giteye:/home/ivan/.cargo/bin:/home/ivan/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin");
-
-
+    
     
     println!("cargo:rerun-if-changed=build.rs");
 }
