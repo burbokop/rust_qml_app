@@ -1,6 +1,8 @@
 use cstr::cstr;
 use qmetaobject::prelude::*;
+use rust_qml_app::inkview;
 use std::env;
+
 
 // The `QObject` custom derive macro allows to expose a class to Qt and QML
 #[derive(QObject, Default)]
@@ -20,6 +22,11 @@ struct Greeter {
 fn main() {
     println!("ssssStart.....");
     env::set_var("QT_QPA_PLATFORM", "pocketbook2");
+
+    println!("inkview::current_task: {}", inkview::current_task());
+    println!("inkview::device_model: {}", inkview::device_model());
+    println!("inkview::hardware_type: {}", inkview::hardware_type());
+    println!("inkview::software_version: {}", inkview::software_version());
 
     qml_register_type::<Greeter>(cstr!("Greeter"), 1, 0, cstr!("Greeter"));
 
